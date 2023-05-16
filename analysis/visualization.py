@@ -4,8 +4,10 @@ from graphviz import Digraph
 import torch
 import numpy as np
 
+# %%
+
 # filepath to csv holding logits
-logits_FP = "logits_vocab2xcontext3asdf.csv"
+logits_FP = "logits_vocab2context3asdf.csv"
 temparature = 0.5
 
 # read logits from csv
@@ -16,6 +18,15 @@ with open(logits_FP) as f:
     for line in lines[1:]:
         transitions.append(list(map(float, line.strip().split(","))))
 
+# %%
+import pickle
+with open("./logits/logits_vocab3context4.pkl", "rb") as f:
+    transitions = pickle.load(f)
+
+import itertools
+states = [''.join(n) for n in itertools.product("012", repeat=4)]
+
+# %%
 # convert each row of logits to probabilities
 for i in range(len(transitions)):
     row = transitions[i]
@@ -31,7 +42,3 @@ for i in range(len(transitions)):
     for j in range(len(transitions[i])):
         if transitions[i][j] > 0.01:
             dot.edge(str(i), str(j), label=str(round(transitions[i][j], 2)))
-
-# save graph
-dot.render('logits_FP', view=True)
-
