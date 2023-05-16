@@ -1,3 +1,5 @@
+# Example with toy-data, considering two tokens (0,1) in context length 3. 
+# %%
 from babyGPT import GPT, GPTConfig
 import torch
 from torch.nn import functional as F
@@ -13,11 +15,10 @@ config = GPTConfig(
     n_embd = 16,
     bias = False,
 )
+
 gpt = GPT(config)
-
-
 seq = list(map(int, "111101111011110"))
-
+# %%
 # convert the sequence to a tensor
 #  holding all the individual examples in that sequence
 X, Y = [], []
@@ -31,6 +32,7 @@ X = torch.tensor(X, dtype=torch.long)
 Y = torch.tensor(Y, dtype=torch.long)
 print(X.shape, Y.shape)
 
+# %%
 torch.manual_seed(0)
 gpt = GPT(config)
 optimizer = torch.optim.AdamW(gpt.parameters(), lr=1e-3, weight_decay=1e-1)
