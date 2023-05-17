@@ -2,19 +2,17 @@
 import numpy as np
 import torch
 
-def HitT(T, transitions):
+def HitT(T, transitions : np.array):
     """
     T: temperature
     transitions: matrix of logits
     """	
     # convert each row of logits to probabilities
-    for i in range(len(transitions)):
-        row = transitions[i]
-        row = [x/T if x != 0.0 else -np.infty for x in row]
-        row = torch.softmax(torch.tensor(row), dim=0)
-        transitions[i] = row.tolist()
+    transition_matrix = np.zeros(transitions.shape)
 
-    transition_matrix = np.array(transitions)
+    for i in range(len(transitions)):
+        row = [x/T if x != 0.0 else -np.infty for x in transitions[i]]
+        transition_matrix[i] = torch.softmax(torch.tensor(row), dim=0).tolist()
 
     '''
     Since the sum of each row is 1, our matrix is row stochastic.
@@ -22,6 +20,7 @@ def HitT(T, transitions):
     '''
     transition_matrix_transp = transition_matrix.T
     eigenvals, eigenvects = np.linalg.eig(transition_matrix_transp)
+
     '''
     Find the indexes of the eigenvalues that are close to one.
     Use them to select the target eigen vectors. Flatten the result.
@@ -32,7 +31,8 @@ def HitT(T, transitions):
     # Turn the eigenvector elements into probabilites
     stationary_distrib = target_eigenvect / sum(target_eigenvect)
 
-    N = len(transitions[0])
+    # length of matrix
+    N = transition_matrix.shape[0]
 
     # matrix where every row is the stationary distribution
     stationary_distrib_matrix = np.tile(stationary_distrib, (N,1))
@@ -51,6 +51,7 @@ def HitT(T, transitions):
 
 def load_logits(logits_FP):
     # read logits from csv
+
     with open(logits_FP) as f:
         lines = f.readlines()
         states = lines[0].strip().split(",")
@@ -58,7 +59,7 @@ def load_logits(logits_FP):
         for line in lines[1:]:
             transitions.append(list(map(float, line.strip().split(","))))
     
-    return transitions, states
+    return np.array(transitions), states
 
 def hoeffding_bound(t, n, a, b, HitT):
     """
@@ -72,3 +73,8 @@ def hoeffding_bound(t, n, a, b, HitT):
     nu2 = 0.25*n*(b-a)*HitT
 
     return np.exp((-2 * n * (t**2)) / nu2)
+# %%
+if __name__=="__main__":
+    transitions, states = load_logits("../model/logits/logits_vocab2context3.csv")
+    print(HitT(0.99, transitions))
+# %%
