@@ -14,6 +14,8 @@ hitt_small = [HitT(t, transitions_small) for t in temperatures]
 hitt_large = [HitT(t, transitions_large) for t in temperatures]
 # %%
 # plot HitT as a function of temperature
+# set dpi
+plt.figure(dpi=300)
 plt.plot(temperatures, hitt_small, label='vocabulary = 2, context = 3')
 plt.plot(temperatures, hitt_large, label='vocabulary = 3, context = 4', alpha=0.9)
 plt.xlabel("Temperature")
@@ -22,7 +24,9 @@ plt.title("HitT as a function of T")
 # plot HitT as a function of temperature
 plt.legend()
 plt.yscale("log")
-# set xlim 
+# set xlim
+#plt.ylim(-0.01*max(hitt_large), max(hitt_large))
+#plt.xlim(0.0, 0.15)
 plt.show()
 
 # %%

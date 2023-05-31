@@ -37,7 +37,7 @@ def HitT(T, transitions : np.array):
     # matrix where every row is the stationary distribution
     stationary_distrib_matrix = np.tile(stationary_distrib, (N,1))
     # calculate the fundamental matrix
-    fundamental_matrix = np.linalg.inv(np.eye(N,N) - transition_matrix - stationary_distrib_matrix)
+    fundamental_matrix = np.linalg.inv(np.eye(N,N) - transition_matrix + stationary_distrib_matrix)
 
     def expected_hittingtime(i, j):
         return (fundamental_matrix[j,j] - fundamental_matrix[i,j])/ stationary_distrib[j]
