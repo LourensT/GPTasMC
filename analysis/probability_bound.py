@@ -70,7 +70,7 @@ def hoeffding_bound(t, n, a, b, HitT):
     HitT: hitting time
     """
 
-    nu2 = 0.25*n*(b-a)*HitT
+    nu2 = 0.25*n*(b-a)*(HitT**2)
 
     return np.exp((-2 * n * (t**2)) / nu2)
 # %%
